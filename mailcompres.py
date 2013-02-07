@@ -1,7 +1,11 @@
 #!/usr/bin/python
 from __future__ import print_function
 
-__author__ = 'mberger'
+__author__ = 'Martijn Berger <mberger@denc.nl>'
+__version__ = 0.01
+__docformat__ = 'plaintext'
+__license__ = 'GPLv2 or later'
+__copyright__ = 'Copyright (c) 2012, DENC'
 
 
 import sys, os
@@ -45,7 +49,6 @@ def compressMail(filename, maildir):
 
 def getLock(maildir):
     # function is broken IE really unsafe for general use...
-    lock = False
 
     cmd = subprocess.Popen(['/usr/lib/dovecot/maildirlock', os.path.join(maildir, 'cur'), '30'], stdout = subprocess.PIPE )
     pid = -1
@@ -59,7 +62,7 @@ def getLock(maildir):
         for l in cmd.stdout:
             pid = int(l)
             break
-    except Exception as e:
+    except ValueError as e:
         pass
 
     return pid
@@ -112,11 +115,8 @@ def main():
                     print('.', end="")
                     res.append((i,o))
                 log.info("Compressed {} mails in {}".format(len(res),maildir))
-                # should make the max moveable chunk size smaller....
+                # should make the max movable chunk size smaller....
                 lockAndMove(res,maildir)
-
-
-
 
     sys.exit(0)
 
