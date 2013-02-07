@@ -17,6 +17,7 @@ import subprocess
 import shutil
 import signal
 import time
+import binascii
 from subprocess import check_call
 
 
@@ -39,7 +40,12 @@ def compressMail(filename, maildir):
     out_path = os.path.join(os.path.join(maildir, 'tmp'), filename + 'Z')
     log.info('compressing {} -> {}'.format(in_path, out_path))
     f_in = open(in_path, 'rb')
-    f_out = gzip.open(out_path, 'wb')
+    if binascii.hexlify(f_in.read(3)) == "1f8b08":
+        log.error("file is already a gzip file not doing double gzip")
+        f_out = open(out_path, 'wb')
+    else:
+        f_out = gzip.open(out_path, 'wb')
+    f_in.seek(0)
     f_out.writelines(f_in)
     f_out.close()
     f_in.close()
